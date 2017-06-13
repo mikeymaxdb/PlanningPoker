@@ -1,5 +1,7 @@
 var React = require('react');
 var ReactDOM = require('react-dom');
+var io = require('socket.io-client');
+var socket = io();
 
 class App extends React.Component{
 	render(){
