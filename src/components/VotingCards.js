@@ -2,8 +2,6 @@ var React = require('react');
 var Card = require('./Card');
 require('./css/VotingCards.scss');
 
-var cards = [0,1,3,5,8,13,21,34];
-
 class VotingCards extends React.Component{
 	onClick(item){
 		console.debug("Vote selected: ",item);
@@ -15,7 +13,7 @@ class VotingCards extends React.Component{
 
 		return (
 			<div className="VotingCards">
-				{cards.map(function(item,index){
+				{this.props.options.split(',').map(function(item,index){
 					return (
 						<Card
 							value={item}

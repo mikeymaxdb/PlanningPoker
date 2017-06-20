@@ -11,13 +11,17 @@
 			}
 			input{
 				border: none;
+				border-bottom: 1px solid transparent;
 				font-size: 2em;
 				outline: none;
 				width: 100%;
 
 				&:focus{
-					border-bottom: 1px solid #333;
+					border-bottom-color: #333;
 				}
+			}
+			&:last-child{
+				flex: 1;
 			}
 		}
 	}

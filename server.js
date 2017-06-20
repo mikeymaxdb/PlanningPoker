@@ -2,8 +2,7 @@ var express = require('express');
 var App = express();
 var Router = express.Router();
 
-var DB = {
-}
+var RoomOptions = {};
 
 App.use(express.static('public'));
 
@@ -11,17 +10,19 @@ var Server = App.listen(3000, function () {
   console.log('[i] Listening on port 3000');
 });
 
-function updateClients(socket){
+function sync(socket){
 	var clients = io.sockets.adapter.rooms[socket.room];
 	var DB = {
 		users: [],
-		room: socket.room
+		room: socket.room,
+		roomData: RoomOptions[socket.room]
 	}
-
-	socket.emit('update',{name:socket.name,vote:socket.vote});
 
 	for(id in clients.sockets) {
 		var sock = io.sockets.sockets[id];
+		if(RoomOptions[socket.room].reset){
+			sock.vote = "";
+		}
 		var user = {};
 		user.name = sock.name;
 		user.vote = sock.vote;
@@ -30,6 +31,8 @@ function updateClients(socket){
 	};
 
 	io.to(socket.room).emit('update', DB);
+	socket.emit('update',{name:socket.name,vote:socket.vote});
+	RoomOptions[socket.room].reset = false;
 }
 
 var io = require('socket.io')(Server);
@@ -38,33 +41,70 @@ io.on('connection', (socket)=>{
 	socket.name = "User";
 
 	socket.on('room', function(room) {
-		console.log('[+] '+socket.name+' joined '+room);
+		console.log('[+] '+socket.name+'['+(socket.room||"")+'] joined '+room);
 		socket.leave(socket.room);
+		//TODO delete old room options if empty
 		socket.room = room;
+		if(!RoomOptions[room]){
+			RoomOptions[room] = {options: "0,1,2,3,5,8,13,21,34,pass",stage:1};
+		}
         socket.join(room,function(){
-        	updateClients(socket);
+        	sync(socket);
         });
-
-        
     });
 
     socket.on('name', function(name) {
-		console.log('[+] '+socket.name+' is now '+name);
+		console.log('[+] '+socket.name+'['+socket.room+'] is now '+name);
         socket.name = name;
         if(socket.room){
-        	updateClients(socket);
+        	sync(socket);
         } else {
         	socket.emit('log', "[!] No room defined");
         }
     });
 
     socket.on('vote', function(vote) {
-		console.log('[+] '+socket.name+' votes '+vote);
+		console.log('[+] '+socket.name+'['+socket.room+'] votes '+vote);
         socket.vote = vote;
         if(socket.room){
-        	updateClients(socket);
+        	sync(socket);
         } else {
         	socket.emit('log', "[!] No room defined");
         }
     });
+
+    socket.on('options', function(options) {
+    	console.log('[+] '+socket.name+'['+socket.room+'] changed options');
+        if(socket.room){
+        	RoomOptions[socket.room].options = options;
+        	sync(socket);
+        } else {
+        	socket.emit('log', "[!] No room defined");
+        }
+    });
+
+    socket.on('flip', function(options) {
+    	console.log('[+] '+socket.name+'['+socket.room+'] flipped');
+        if(socket.room){
+        	RoomOptions[socket.room].stage = 2;
+        	sync(socket);
+        } else {
+        	socket.emit('log', "[!] No room defined");
+        }
+    });
+
+    socket.on('reset', function(options) {
+    	console.log('[+] '+socket.name+'['+socket.room+'] reset');
+        if(socket.room){
+        	RoomOptions[socket.room].stage = 1;
+        	RoomOptions[socket.room].reset = true;
+        	sync(socket);
+        } else {
+        	socket.emit('log', "[!] No room defined");
+        }
+    });
+
+    socket.on('disconnect', function() {
+      sync(socket);
+   });
 });

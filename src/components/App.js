@@ -7,6 +7,12 @@ var VotingCards = require('./VotingCards');
 
 require('./css/App.scss');
 
+var stages = [
+	"err",
+	"voting",
+	"flipped"
+];
+
 class App extends React.Component{
 	constructor(props) {
 		super(props);
@@ -18,12 +24,20 @@ class App extends React.Component{
 			connected: false,
 			room: "WeVideo",
 			name: "Name",
-			vote: ""
+			vote: "",
+			roomData: {
+				options: "",
+				stage: 1
+			},
 		};
 
 		this.onRoomChange = this.onRoomChange.bind(this);
 		this.onNameChange = this.onNameChange.bind(this);
 		this.onVoteSelect = this.onVoteSelect.bind(this);
+		this.onOptionsChange = this.onOptionsChange.bind(this);
+
+		this.flip = this.flip.bind(this);
+		this.reset = this.reset.bind(this);
 
 		this.props.socket.on('connect', function(data){
 			console.debug("[i] Socket connected");
@@ -59,6 +73,18 @@ class App extends React.Component{
 		this.props.socket.emit('name', name);
 	}
 
+	onOptionsChange(options){
+		this.props.socket.emit('options', options);
+	}
+
+	flip(){
+		this.props.socket.emit('flip');
+	}
+
+	reset(){
+		this.props.socket.emit('reset');
+	}
+
 	render(){
 		return (
 			<div className="App">
@@ -66,17 +92,23 @@ class App extends React.Component{
 					<Settings
 						onRoomChange={this.onRoomChange}
 						onNameChange={this.onNameChange}
+						onOptionsChange={this.onOptionsChange}
 						room={this.state.room}
 						name={this.state.name}
+						options={this.state.roomData.options}
 					/>
-					<Votes users={this.state.users} />
+					<Votes users={this.state.users} stage={this.state.roomData.stage}/>
 					<VotingCards
 						onVoteSelect={this.onVoteSelect}
 						vote={this.state.vote}
+						options={this.state.roomData.options}
 					/>
 				</div>
 				<div className="sidebar">
-					<Result />
+					<div className={"status "+(this.state.connected?"con":"")} />
+					<div>{stages[this.state.roomData.stage]}</div>
+					<button onClick={this.flip}>FLIP</button>
+					<button onClick={this.reset}>RESET</button>
 				</div>
 			</div>
 		)

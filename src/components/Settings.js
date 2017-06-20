@@ -7,10 +7,12 @@ class Settings extends React.Component{
 		super(props);
 		this.state = {
 			room: "",
-			name: ""
+			name: "",
+			options: ""
 		};
 		this.updateRoom = this.updateRoom.bind(this);
 		this.updateName = this.updateName.bind(this);
+		this.updateOptions = this.updateOptions.bind(this);
 	}
 
 	updateRoom(e){
@@ -23,8 +25,13 @@ class Settings extends React.Component{
 		this.props.onNameChange(e.target.value);
 	}
 
+	updateOptions(e){
+		this.setState({options: e.target.value});
+		this.props.onOptionsChange(e.target.value);
+	}
+
 	componentWillReceiveProps(nextProps) {
-		this.setState({name:nextProps.name, room:nextProps.room});
+		this.setState(nextProps);
 	}
 
 	render(){
@@ -41,6 +48,12 @@ class Settings extends React.Component{
 						<div className="label">Name</div>
 						<div>
 							<input type="text" value={this.state.name} onChange={this.updateName} />
+						</div>
+					</div>
+					<div className="inputItem">
+						<div className="label">Options</div>
+						<div>
+							<input type="text" value={this.state.options} onChange={this.updateOptions} />
 						</div>
 					</div>
 				</div>

@@ -4,6 +4,7 @@
 
 	.inner{
 		background-color: #0089cc;
+		border: 2px solid transparent;
 		color: white;
 		height: 10rem;
 		width: 7rem;
@@ -28,5 +29,21 @@
 	}
 	&.selected{
 		padding-bottom: 3rem;
+	}
+	&.stage1{
+		.inner{
+			border-color: #0089cc;
+			background-color: #E3F6FF;
+			color: #0089cc;
+
+			.value{
+				visibility: hidden;
+			}
+		}
+		&.valid{
+			.inner{
+				background-color: #96FFAF;
+			}
+		}
 	}
 }
