@@ -1,16 +1,8 @@
 var React = require('react');
 var ReactDOM = require('react-dom');
 var io = require('socket.io-client');
-var socket = io();
+var socket = io.connect();
 
-class App extends React.Component{
-	render(){
-		return (
-			<div>
-				Planning poker in react
-			</div>
-		)
-	}
-};
+var App = require('../components/App');
 
-ReactDOM.render(<App />, document.getElementById("AppContainer"));
+ReactDOM.render(<App socket={socket}/>, document.getElementById("AppContainer"));
