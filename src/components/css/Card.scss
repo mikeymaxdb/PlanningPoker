@@ -1,0 +1,32 @@
+.Card{
+	padding: .5rem .2rem .5rem .2rem;
+	transition: all .25s ease;
+
+	.inner{
+		background-color: #0089cc;
+		color: white;
+		height: 10rem;
+		width: 7rem;
+		border-radius: 1rem;
+		display: flex;
+		flex-direction: column;
+		font-size: 2em;
+		cursor: pointer;
+
+		.value{
+			flex: 1;
+			display: flex;
+			justify-content: center;
+			align-items: center;
+			color: inherit;
+		}
+		.name{
+			text-align: center;
+			font-size: .5em;
+			color: inherit;
+		}
+	}
+	&.selected{
+		padding-bottom: 3rem;
+	}
+}

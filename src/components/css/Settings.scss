@@ -1,0 +1,24 @@
+.Settings{
+	.items{
+		display: flex;
+
+		.inputItem{
+			padding: 1rem;
+			width: 15rem;
+
+			.label{
+				font-size: .8em;
+			}
+			input{
+				border: none;
+				font-size: 2em;
+				outline: none;
+				width: 100%;
+
+				&:focus{
+					border-bottom: 1px solid #333;
+				}
+			}
+		}
+	}
+}
