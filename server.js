@@ -18,6 +18,8 @@ function updateClients(socket){
 		room: socket.room
 	}
 
+	socket.emit('update',{name:socket.name,vote:socket.vote});
+
 	for(id in clients.sockets) {
 		var sock = io.sockets.sockets[id];
 		var user = {};
@@ -51,7 +53,6 @@ io.on('connection', (socket)=>{
         socket.name = name;
         if(socket.room){
         	updateClients(socket);
-        	socket.emit('name',socket.name);
         } else {
         	socket.emit('log', "[!] No room defined");
         }

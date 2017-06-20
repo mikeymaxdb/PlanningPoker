@@ -17,7 +17,8 @@ class App extends React.Component{
 			users: [],
 			connected: false,
 			room: "WeVideo",
-			name: "Name"
+			name: "Name",
+			vote: ""
 		};
 
 		this.onRoomChange = this.onRoomChange.bind(this);
@@ -38,11 +39,7 @@ class App extends React.Component{
 
 		this.props.socket.on('update', function(data){
 			console.debug("[i] Update: ",data)
-			view.setState({users:data.users,room:data.room});
-		});
-
-		this.props.socket.on('name', function(data){
-			view.setState({name:data});
+			view.setState(data);
 		});
 
 		this.props.socket.on('log', function(data){
@@ -75,6 +72,7 @@ class App extends React.Component{
 					<Votes users={this.state.users} />
 					<VotingCards
 						onVoteSelect={this.onVoteSelect}
+						vote={this.state.vote}
 					/>
 				</div>
 				<div className="sidebar">
