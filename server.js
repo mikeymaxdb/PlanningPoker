@@ -12,6 +12,10 @@ var Server = App.listen(3000, function () {
 
 function sync(socket){
 	var clients = io.sockets.adapter.rooms[socket.room];
+	if(!clients){
+		return;
+	}
+	console.log('[i] '+socket.name+'['+(socket.room||"")+'] caused sync');
 	var DB = {
 		users: [],
 		room: socket.room,
@@ -22,6 +26,7 @@ function sync(socket){
 		var sock = io.sockets.sockets[id];
 		if(RoomOptions[socket.room].reset){
 			sock.vote = "";
+			sock.emit('update',{vote:sock.vote});
 		}
 		var user = {};
 		user.name = sock.name;
@@ -54,22 +59,25 @@ io.on('connection', (socket)=>{
     });
 
     socket.on('name', function(name) {
-		console.log('[+] '+socket.name+'['+socket.room+'] is now '+name);
+		console.log('[+] '+socket.name+'['+(socket.room||"")+'] is now '+name);
         socket.name = name;
         if(socket.room){
         	sync(socket);
         } else {
-        	socket.emit('log', "[!] No room defined");
+        	socket.emit('log', "[=][Name] No room defined");
         }
     });
 
     socket.on('vote', function(vote) {
 		console.log('[+] '+socket.name+'['+socket.room+'] votes '+vote);
-        socket.vote = vote;
+        
         if(socket.room){
+        	if(RoomOptions[socket.room].stage != 2){
+	        	socket.vote = vote;
+	        }
         	sync(socket);
         } else {
-        	socket.emit('log', "[!] No room defined");
+        	socket.emit('log', "[!][Vote] No room defined");
         }
     });
 
@@ -79,7 +87,7 @@ io.on('connection', (socket)=>{
         	RoomOptions[socket.room].options = options;
         	sync(socket);
         } else {
-        	socket.emit('log', "[!] No room defined");
+        	socket.emit('log', "[!][Options] No room defined");
         }
     });
 
@@ -89,7 +97,7 @@ io.on('connection', (socket)=>{
         	RoomOptions[socket.room].stage = 2;
         	sync(socket);
         } else {
-        	socket.emit('log', "[!] No room defined");
+        	socket.emit('log', "[!][Flip] No room defined");
         }
     });
 
@@ -100,11 +108,12 @@ io.on('connection', (socket)=>{
         	RoomOptions[socket.room].reset = true;
         	sync(socket);
         } else {
-        	socket.emit('log', "[!] No room defined");
+        	socket.emit('log', "[!][Reset] No room defined");
         }
     });
 
     socket.on('disconnect', function() {
-      sync(socket);
-   });
+    	console.log('[-] '+socket.name+'['+(socket.room||"")+'] disconnected');
+		sync(socket);
+	});
 });

@@ -1,4 +1,12 @@
 .VotingCards{
 	display: flex;
 	align-items: flex-end;
+	padding: 0 1rem;
+
+	.Card{
+		flex: 1;
+		.inner{
+			width: auto;
+		}
+	}
 }

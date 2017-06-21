@@ -10,6 +10,10 @@ class VotingCards extends React.Component{
 
 	render(){
 		var view = this;
+		
+		if(!this.props.options){
+			return <div />
+		}
 
 		return (
 			<div className="VotingCards">

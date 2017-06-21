@@ -8,6 +8,10 @@
 
 			.label{
 				font-size: .8em;
+				span{
+					text-decoration: underline;
+					cursor: pointer;
+				}
 			}
 			input{
 				border: none;
@@ -15,6 +19,11 @@
 				font-size: 2em;
 				outline: none;
 				width: 100%;
+				border-radius: 4px;
+
+				&.toFill{
+					box-shadow: 0 0 8px 1px #0089cc;
+				}
 
 				&:focus{
 					border-bottom-color: #333;
@@ -22,6 +31,9 @@
 			}
 			&:last-child{
 				flex: 1;
+			}
+			.hidden{
+				display: none;
 			}
 		}
 	}

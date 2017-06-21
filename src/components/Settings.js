@@ -8,11 +8,13 @@ class Settings extends React.Component{
 		this.state = {
 			room: "",
 			name: "",
-			options: ""
+			options: "",
+			showOptions: false
 		};
 		this.updateRoom = this.updateRoom.bind(this);
 		this.updateName = this.updateName.bind(this);
 		this.updateOptions = this.updateOptions.bind(this);
+		this.showOptions = this.showOptions.bind(this);
 	}
 
 	updateRoom(e){
@@ -30,6 +32,10 @@ class Settings extends React.Component{
 		this.props.onOptionsChange(e.target.value);
 	}
 
+	showOptions(){
+		this.setState({showOptions:!this.state.showOptions});
+	}
+
 	componentWillReceiveProps(nextProps) {
 		this.setState(nextProps);
 	}
@@ -41,7 +47,7 @@ class Settings extends React.Component{
 					<div className="inputItem">
 						<div className="label">Room</div>
 						<div>
-							<input type="text" value={this.state.room} onChange={this.updateRoom} />
+							<input type="text" className={this.state.room?"":"toFill"} value={this.state.room} onChange={this.updateRoom} />
 						</div>
 					</div>
 					<div className="inputItem">
@@ -50,12 +56,14 @@ class Settings extends React.Component{
 							<input type="text" value={this.state.name} onChange={this.updateName} />
 						</div>
 					</div>
-					<div className="inputItem">
-						<div className="label">Options</div>
-						<div>
-							<input type="text" value={this.state.options} onChange={this.updateOptions} />
+					{this.state.options?(
+						<div className="inputItem">
+							<div className="label">Options <span onClick={this.showOptions}>{this.state.showOptions?"Hide":"Edit"}</span></div>
+							<div className={this.state.showOptions?"":"hidden"}>
+								<input type="text" value={this.state.options} onChange={this.updateOptions} />
+							</div>
 						</div>
-					</div>
+					):""}
 				</div>
 			</div>
 		)

@@ -22,8 +22,8 @@ class App extends React.Component{
 			selection: null,
 			users: [],
 			connected: false,
-			room: "WeVideo",
-			name: "Name",
+			room: localStorage.getItem('room') || "",
+			name: localStorage.getItem('name') || "Name",
 			vote: "",
 			roomData: {
 				options: "",
@@ -42,7 +42,9 @@ class App extends React.Component{
 		this.props.socket.on('connect', function(data){
 			console.debug("[i] Socket connected");
 			view.setState({connected: true});
-			view.onRoomChange(view.state.room);
+			if(view.state.room){
+				view.onRoomChange(view.state.room);
+			}
 			view.onNameChange(view.state.name);
 		});
 
@@ -54,6 +56,12 @@ class App extends React.Component{
 		this.props.socket.on('update', function(data){
 			console.debug("[i] Update: ",data)
 			view.setState(data);
+			if(data.name){
+				localStorage.setItem('name', data.name);
+			}
+			if(data.room){
+				localStorage.setItem('room', data.room);
+			}
 		});
 
 		this.props.socket.on('log', function(data){
@@ -106,9 +114,12 @@ class App extends React.Component{
 				</div>
 				<div className="sidebar">
 					<div className={"status "+(this.state.connected?"con":"")} />
-					<div>{stages[this.state.roomData.stage]}</div>
-					<button onClick={this.flip}>FLIP</button>
-					<button onClick={this.reset}>RESET</button>
+					{this.state.room?(
+						<div>
+							<button onClick={this.flip}>FLIP</button>
+							<button onClick={this.reset}>RESET</button>
+						</div>
+					):""}
 				</div>
 			</div>
 		)
