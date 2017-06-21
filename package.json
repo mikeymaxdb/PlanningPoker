@@ -4,7 +4,8 @@
   "description": "planning poker",
   "main": "server.js",
   "scripts": {
-    "build": "webpack --watch",
+    "build-watch": "webpack --watch",
+    "build": "webpack",
     "start": "supervisor server.js"
   },
   "author": "",

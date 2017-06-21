@@ -15,7 +15,7 @@ function sync(socket){
 	if(!clients){
 		return;
 	}
-	console.log('[i] '+socket.name+'['+(socket.room||"")+'] caused sync');
+	//console.log('[i] '+socket.name+'['+(socket.room||"")+'] caused sync');
 	var DB = {
 		users: [],
 		room: socket.room,
