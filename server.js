@@ -35,8 +35,8 @@ function sync(socket){
 		DB.users.push(user);
 	};
 
-	io.to(socket.room).emit('update', DB);
 	socket.emit('update',{name:socket.name,vote:socket.vote});
+	io.to(socket.room).emit('update', DB);
 	RoomOptions[socket.room].reset = false;
 }
 
