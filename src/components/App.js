@@ -85,7 +85,7 @@ class App extends React.Component{
 	}
 
 	onOptionsChange(options){
-		this.setState({options:options});
+		this.setState({roomData:{options:options,stage:this.state.roomData.stage}});
 		this.props.socket.emit('options', options);
 	}
 
