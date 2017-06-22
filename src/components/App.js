@@ -70,18 +70,22 @@ class App extends React.Component{
 	}
 
 	onVoteSelect(vote){
+		this.setState({vote:vote});
 		this.props.socket.emit('vote', vote);
 	}
 
 	onRoomChange(room){
+		this.setState({room:room});
 		this.props.socket.emit('room', room);
 	}
 
 	onNameChange(name){
+		this.setState({name:name});
 		this.props.socket.emit('name', name);
 	}
 
 	onOptionsChange(options){
+		this.setState({options:options});
 		this.props.socket.emit('options', options);
 	}
 
