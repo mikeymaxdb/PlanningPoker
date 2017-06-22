@@ -69,10 +69,9 @@ io.on('connection', (socket)=>{
     });
 
     socket.on('vote', function(vote) {
-		console.log('[+] '+socket.name+'['+socket.room+'] votes '+vote);
-        
         if(socket.room){
         	if(RoomOptions[socket.room].stage != 2){
+        		console.log('[+] '+socket.name+'['+socket.room+'] votes '+vote);
 	        	socket.vote = vote;
 	        }
         	sync(socket);
@@ -82,8 +81,8 @@ io.on('connection', (socket)=>{
     });
 
     socket.on('options', function(options) {
-    	console.log('[+] '+socket.name+'['+socket.room+'] changed options');
         if(socket.room){
+        	console.log('[+] '+socket.name+'['+socket.room+'] changed options');
         	RoomOptions[socket.room].options = options;
         	sync(socket);
         } else {
@@ -92,8 +91,8 @@ io.on('connection', (socket)=>{
     });
 
     socket.on('flip', function(options) {
-    	console.log('[+] '+socket.name+'['+socket.room+'] flipped');
         if(socket.room){
+        	console.log('[+] '+socket.name+'['+socket.room+'] flipped');
         	RoomOptions[socket.room].stage = 2;
         	sync(socket);
         } else {
@@ -102,8 +101,8 @@ io.on('connection', (socket)=>{
     });
 
     socket.on('reset', function(options) {
-    	console.log('[+] '+socket.name+'['+socket.room+'] reset');
         if(socket.room){
+        	console.log('[+] '+socket.name+'['+socket.room+'] reset');
         	RoomOptions[socket.room].stage = 1;
         	RoomOptions[socket.room].reset = true;
         	sync(socket);
