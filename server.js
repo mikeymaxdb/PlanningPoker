@@ -51,7 +51,7 @@ io.on('connection', (socket)=>{
 		//TODO delete old room options if empty
 		socket.room = room;
 		if(!RoomOptions[room]){
-			RoomOptions[room] = {options: "0,1,2,3,5,8,13,21,34,pass",stage:1};
+			RoomOptions[room] = {options: "0,1,2,3,5,8,13,20,40,60,100",stage:1};
 		}
         socket.join(room,function(){
         	sync(socket);
