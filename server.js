@@ -40,7 +40,7 @@ function sync(socket){
 	RoomOptions[socket.room].reset = false;
 }
 
-var io = require('socket.io')(Server,{path: '/planning/socket.io/'});
+var io = require('socket.io')(Server);
 io.on('connection', (socket)=>{
 	console.log('[+] A user connected');
 	socket.name = "User";
