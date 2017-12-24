@@ -65,40 +65,49 @@ class App extends React.Component{
 		});
 	}
 
+	emit(type,data){
+		var contents = {
+			type: type,
+			data: data
+		}
+
+		this.props.socket.emit("action", contents);
+	}
+
 	onVoteSelect(vote){
 		if(this.state.roomData.stage == STAGES.VOTING){
 			this.setState({vote:vote});
-			this.props.socket.emit('vote', vote);
+			this.emit("vote", vote);
 		}
 	}
 
 	onRoomChange(room){
 		this.setState({room:room});
-		localStorage.setItem('room', room);
-		this.props.socket.emit('room', room);
+		localStorage.setItem("room", room);
+		this.emit("room", room);
 	}
 
 	onNameChange(name){
 		this.setState({name:name});
 		localStorage.setItem('name', name);
-		this.props.socket.emit('name', name);
+		this.emit("name", name);
 	}
 
 	onOptionsChange(options){
 		this.setState({roomData:{options:options,stage:this.state.roomData.stage}});
-		this.props.socket.emit('options', options);
+		this.emit("options", options);
 	}
 
 	flip(){
-		this.props.socket.emit('flip');
+		this.emit("flip");
 	}
 
 	toggleAutoFlip(){
-		this.props.socket.emit('autoFlip');
+		this.emit("autoFlip");
 	}
 
 	reset(){
-		this.props.socket.emit('reset');
+		this.emit("reset");
 	}
 
 	render(){
