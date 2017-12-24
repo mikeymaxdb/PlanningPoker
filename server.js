@@ -4,6 +4,12 @@ var Router = express.Router();
 
 var RoomOptions = {};
 
+var STAGES = {
+    ERROR: 0,
+    VOTING: 1,
+    FLIPPED: 2
+}
+
 App.use(express.static('public'));
 
 var Server = App.listen(3000, function () {
@@ -12,32 +18,43 @@ var Server = App.listen(3000, function () {
 
 function sync(socket){
 	var clients = io.sockets.adapter.rooms[socket.room];
+    var room = RoomOptions[socket.room];
 	if(!clients){
 		return;
 	}
-	//console.log('[i] '+socket.name+'['+(socket.room||"")+'] caused sync');
+
 	var DB = {
 		users: [],
 		room: socket.room,
-		roomData: RoomOptions[socket.room]
+		roomData: room
 	}
+
+    var haveAllVotes = true;
 
 	for(id in clients.sockets) {
 		var sock = io.sockets.sockets[id];
-		if(RoomOptions[socket.room].reset){
+		if(room.reset){
 			sock.vote = "";
 			sock.emit('update',{vote:sock.vote});
 		}
+
 		var user = {};
 		user.name = sock.name;
 		user.vote = sock.vote;
 
 		DB.users.push(user);
-	};
 
-	socket.emit('update',{name:socket.name,vote:socket.vote});
+        haveAllVotes = haveAllVotes && !!(sock.vote);
+	};
+    
 	io.to(socket.room).emit('update', DB);
-	RoomOptions[socket.room].reset = false;
+	room.reset = false;
+
+    // Autoflip
+    if(room.autoFlip && haveAllVotes && room.stage == STAGES.VOTING){
+        RoomOptions[socket.room].stage = STAGES.FLIPPED;
+        sync(socket);
+    }
 }
 
 var io = require('socket.io')(Server,{path: '/planningSocket'});
@@ -51,7 +68,7 @@ io.on('connection', (socket)=>{
 		//TODO delete old room options if empty
 		socket.room = room;
 		if(!RoomOptions[room]){
-			RoomOptions[room] = {options: "0,1,2,3,5,8,13,20,40,60,100",stage:1};
+			RoomOptions[room] = {options: "0,1,2,3,5,8,13,20,40,60,100",stage:1,autoFlip:false};
 		}
         socket.join(room,function(){
         	sync(socket);
@@ -70,7 +87,7 @@ io.on('connection', (socket)=>{
 
     socket.on('vote', function(vote) {
         if(socket.room){
-        	if(RoomOptions[socket.room].stage != 2){
+        	if(RoomOptions[socket.room].stage != STAGES.FLIPPED){
         		console.log('[+] '+socket.name+'['+socket.room+'] votes '+vote);
 	        	socket.vote = vote;
 	        }
@@ -93,17 +110,27 @@ io.on('connection', (socket)=>{
     socket.on('flip', function(options) {
         if(socket.room){
         	console.log('[+] '+socket.name+'['+socket.room+'] flipped');
-        	RoomOptions[socket.room].stage = 2;
+        	RoomOptions[socket.room].stage = STAGES.FLIPPED;
         	sync(socket);
         } else {
         	socket.emit('log', "[!][Flip] No room defined");
         }
     });
 
+    socket.on('autoFlip', function(options) {
+        if(socket.room){
+            console.log('[+] '+socket.name+'['+socket.room+'] flipped');
+            RoomOptions[socket.room].autoFlip = !RoomOptions[socket.room].autoFlip;
+            sync(socket);
+        } else {
+            socket.emit('log', "[!][AutoFlip] No room defined");
+        }
+    });
+
     socket.on('reset', function(options) {
         if(socket.room){
         	console.log('[+] '+socket.name+'['+socket.room+'] reset');
-        	RoomOptions[socket.room].stage = 1;
+        	RoomOptions[socket.room].stage = STAGES.VOTING;
         	RoomOptions[socket.room].reset = true;
         	sync(socket);
         } else {

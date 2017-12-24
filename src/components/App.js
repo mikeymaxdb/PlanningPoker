@@ -7,11 +7,11 @@ var VotingCards = require('./VotingCards');
 
 require('./css/App.scss');
 
-var stages = [
-	"err",
-	"voting",
-	"flipped"
-];
+var STAGES = {
+    ERROR: 0,
+    VOTING: 1,
+    FLIPPED: 2
+}
 
 class App extends React.Component{
 	constructor(props) {
@@ -27,7 +27,8 @@ class App extends React.Component{
 			vote: "",
 			roomData: {
 				options: "",
-				stage: 1
+				stage: 1,
+				autoFlip: false
 			},
 		};
 
@@ -37,6 +38,7 @@ class App extends React.Component{
 		this.onOptionsChange = this.onOptionsChange.bind(this);
 
 		this.flip = this.flip.bind(this);
+		this.toggleAutoFlip = this.toggleAutoFlip.bind(this);
 		this.reset = this.reset.bind(this);
 
 		this.props.socket.on('connect', function(data){
@@ -56,12 +58,6 @@ class App extends React.Component{
 		this.props.socket.on('update', function(data){
 			console.debug("[i] Update: ",data)
 			view.setState(data);
-			if(data.name){
-				localStorage.setItem('name', data.name);
-			}
-			if(data.room){
-				localStorage.setItem('room', data.room);
-			}
 		});
 
 		this.props.socket.on('log', function(data){
@@ -76,11 +72,13 @@ class App extends React.Component{
 
 	onRoomChange(room){
 		this.setState({room:room});
+		localStorage.setItem('room', room);
 		this.props.socket.emit('room', room);
 	}
 
 	onNameChange(name){
 		this.setState({name:name});
+		localStorage.setItem('name', name);
 		this.props.socket.emit('name', name);
 	}
 
@@ -93,6 +91,10 @@ class App extends React.Component{
 		this.props.socket.emit('flip');
 	}
 
+	toggleAutoFlip(){
+		this.props.socket.emit('autoFlip');
+	}
+
 	reset(){
 		this.props.socket.emit('reset');
 	}
@@ -100,31 +102,37 @@ class App extends React.Component{
 	render(){
 		return (
 			<div className="App">
-				<div className="votingContainer">
-					<Settings
-						onRoomChange={this.onRoomChange}
-						onNameChange={this.onNameChange}
-						onOptionsChange={this.onOptionsChange}
-						room={this.state.room}
-						name={this.state.name}
-						options={this.state.roomData.options}
-					/>
-					<Votes users={this.state.users} stage={this.state.roomData.stage}/>
-					<VotingCards
-						onVoteSelect={this.onVoteSelect}
-						vote={this.state.vote}
-						options={this.state.roomData.options}
-					/>
+				<div className="public">
+					<div className="displayed">
+						<Settings
+							onRoomChange={this.onRoomChange}
+							onNameChange={this.onNameChange}
+							onOptionsChange={this.onOptionsChange}
+							room={this.state.room}
+							name={this.state.name}
+							options={this.state.roomData.options}
+						/>
+						<Votes users={this.state.users} stage={this.state.roomData.stage}/>
+					</div>
+					<div className="sidebar">
+						<div className={"status "+(this.state.connected?"con":"")} />
+						{this.state.room?(
+							<div>
+								<button onClick={this.flip}>FLIP</button>
+								<div className="checkbox">
+									<input type="checkbox" id="autoFlipCheckbox" checked={this.state.roomData.autoFlip} onChange={this.toggleAutoFlip}/>
+									<label htmlFor="autoFlipCheckbox">Auto</label>
+								</div>
+								<button onClick={this.reset}>RESET</button>
+							</div>
+						):""}
+					</div>
 				</div>
-				<div className="sidebar">
-					<div className={"status "+(this.state.connected?"con":"")} />
-					{this.state.room?(
-						<div>
-							<button onClick={this.flip}>FLIP</button>
-							<button onClick={this.reset}>RESET</button>
-						</div>
-					):""}
-				</div>
+				<VotingCards
+					onVoteSelect={this.onVoteSelect}
+					vote={this.state.vote}
+					options={this.state.roomData.options}
+				/>
 			</div>
 		)
 	}

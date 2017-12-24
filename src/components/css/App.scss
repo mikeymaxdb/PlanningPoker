@@ -19,6 +19,16 @@ html{
 	height: 100%;
 	width: 100%;
 	display: flex;
+	flex-direction: column;
+
+	.public{
+		display: flex;
+		flex: 1;
+
+		.displayed{
+			flex: 1;
+		}
+	}
 
 	.votingContainer{
 		flex: 1;
@@ -28,7 +38,6 @@ html{
 	.sidebar{
 		//display: none;
 		padding: 1rem;
-		text-align: right;
 		.status{
 			width: 4rem;
 			height: 5px;
@@ -46,7 +55,7 @@ html{
 			width: 4rem;
 			background-color: transparent;
 			border-radius: 4px;
-			margin: 1rem 0;
+			margin-top: 1rem;
 			cursor: pointer;
 			font-weight: 600;
 			color: #0089cc;
@@ -55,6 +64,14 @@ html{
 			&:hover{
 				color: #fff;
 				background-color: #0089cc;
+			}
+		}
+		.checkbox{
+			font-size: .7em;
+			padding-top: .25rem;
+
+			label{
+				padding-left: .25rem;
 			}
 		}
 	}
