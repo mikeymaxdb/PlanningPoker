@@ -1,3 +1,5 @@
+//TODO delete old rooms if empty
+
 var express = require('express');
 var App = express();
 var Router = express.Router();
@@ -12,29 +14,39 @@ var Server = App.listen(3000, function () {
   console.log('[i] Listening on port 3000');
 });
 
+function getRoomName(socket){
+    if(socket.room){
+        return socket.room.name;
+    } else{
+        return "";
+    }
+}
+
 var io = require('socket.io')(Server,{path: '/planningSocket'});
 io.on('connection', (socket)=>{
 	console.log('[+] A user connected');
 	socket.name = "User";
 
-	socket.on('room', function(room) {
-		console.log('[+] '+socket.name+'['+(socket.room||"")+'] joined '+room);
-		socket.leave(socket.room);
-		//TODO delete old room options if empty
-		socket.room = room;
-		if(!Rooms[room]){
-			Rooms[room] = new Room(room,io);
+	socket.on('room', function(roomName) {
+        console.log('[+] '+socket.name+'['+(getRoomName(socket))+'] joined '+roomName);
+		socket.leave(getRoomName(socket));
+		
+		if(!Rooms[roomName]){
+			Rooms[roomName] = new Room(roomName,io);
 		}
-        socket.join(room,function(){
-        	Rooms[room].sync(socket);
+
+        socket.room = Rooms[roomName];
+
+        socket.join(roomName,function(){
+        	socket.room.sync(socket);
         });
     });
 
     socket.on('name', function(name) {
-		console.log('[+] '+socket.name+'['+(socket.room||"")+'] is now '+name);
+		console.log('[+] '+socket.name+'['+(getRoomName(socket))+'] is now '+name);
         socket.name = name;
         if(socket.room){
-        	Rooms[socket.room].sync(socket);
+        	socket.room.sync(socket);
         } else {
         	socket.emit('log', "[=][Name] No room defined");
         }
@@ -42,11 +54,11 @@ io.on('connection', (socket)=>{
 
     socket.on('vote', function(vote) {
         if(socket.room){
-        	if(Rooms[socket.room].canVote){
-        		console.log('[+] '+socket.name+'['+socket.room+'] votes '+vote);
+        	if(socket.room.canVote){
+        		console.log('[+] '+socket.name+'['+getRoomName(socket)+'] votes '+vote);
 	        	socket.vote = vote;
 	        }
-        	Rooms[socket.room].sync(socket);
+        	socket.room.sync(socket);
         } else {
         	socket.emit('log', "[!][Vote] No room defined");
         }
@@ -54,9 +66,9 @@ io.on('connection', (socket)=>{
 
     socket.on('options', function(options) {
         if(socket.room){
-        	console.log('[+] '+socket.name+'['+socket.room+'] changed options');
-        	Rooms[socket.room].options = options;
-        	Rooms[socket.room].sync(socket);
+        	console.log('[+] '+socket.name+'['+getRoomName(socket)+'] changed options');
+        	socket.room.options = options;
+        	socket.room.sync(socket);
         } else {
         	socket.emit('log', "[!][Options] No room defined");
         }
@@ -64,9 +76,9 @@ io.on('connection', (socket)=>{
 
     socket.on('flip', function(options) {
         if(socket.room){
-        	console.log('[+] '+socket.name+'['+socket.room+'] flipped');
-        	Rooms[socket.room].flip();
-        	Rooms[socket.room].sync(socket);
+        	console.log('[+] '+socket.name+'['+getRoomName(socket)+'] flipped');
+        	socket.room.flip();
+        	socket.room.sync(socket);
         } else {
         	socket.emit('log', "[!][Flip] No room defined");
         }
@@ -74,9 +86,9 @@ io.on('connection', (socket)=>{
 
     socket.on('autoFlip', function(options) {
         if(socket.room){
-            console.log('[+] '+socket.name+'['+socket.room+'] flipped');
-            Rooms[socket.room].toggleAutoFlip();
-            Rooms[socket.room].sync(socket);
+            console.log('[+] '+socket.name+'['+getRoomName(socket)+'] flipped');
+            socket.room.toggleAutoFlip();
+            socket.room.sync(socket);
         } else {
             socket.emit('log', "[!][AutoFlip] No room defined");
         }
@@ -84,16 +96,16 @@ io.on('connection', (socket)=>{
 
     socket.on('reset', function(options) {
         if(socket.room){
-        	console.log('[+] '+socket.name+'['+socket.room+'] reset');
-        	Rooms[socket.room].reset();
-        	Rooms[socket.room].sync(socket);
+        	console.log('[+] '+socket.name+'['+getRoomName(socket)+'] reset');
+        	socket.room.reset();
+        	socket.room.sync(socket);
         } else {
         	socket.emit('log', "[!][Reset] No room defined");
         }
     });
 
     socket.on('disconnect', function() {
-    	console.log('[-] '+socket.name+'['+(socket.room||"")+'] disconnected');
-		Rooms[socket.room].sync(socket);
+    	console.log('[-] '+socket.name+'['+(getRoomName(socket))+'] disconnected');
+		socket.room.sync(socket);
 	});
 });

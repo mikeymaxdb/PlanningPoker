@@ -66,8 +66,10 @@ class App extends React.Component{
 	}
 
 	onVoteSelect(vote){
-		this.setState({vote:vote});
-		this.props.socket.emit('vote', vote);
+		if(this.state.roomData.stage == STAGES.VOTING){
+			this.setState({vote:vote});
+			this.props.socket.emit('vote', vote);
+		}
 	}
 
 	onRoomChange(room){
