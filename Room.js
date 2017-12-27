@@ -1,7 +1,8 @@
 const STAGES = {
 	ERROR: 0,
 	VOTING: 1,
-	FLIPPED: 2
+	FLIPPED: 2,
+	RESETING: 3
 }
 
 class Room{
@@ -10,7 +11,6 @@ class Room{
 		this._options = "0,1,2,3,5,8,13,20,40,60,100";
 		this._stage = 1;
 		this._autoFlip = false;
-		this._reset = false;
 
 		this.io = io;
 	}
@@ -51,13 +51,16 @@ class Room{
 			name: this.name,
 			options: this.options,
 			stage: this.stage,
-			autoFlip: this.autoFlip,
-			reset: this._reset
+			autoFlip: this.autoFlip
 		}
 	}
 
 	get canVote(){
 		return this.stage == STAGES.VOTING;
+	}
+
+	get areReseting(){
+		return this.stage == STAGES.RESETING
 	}
 
 
@@ -71,8 +74,9 @@ class Room{
 	}
 
 	reset(){
+		this.stage = STAGES.RESETING;
+		this.sync()
 		this.stage = STAGES.VOTING;
-		this._reset = true;
 	}
 
 	sync(){
@@ -92,7 +96,8 @@ class Room{
 
 		for(var id in clients.sockets) {
 			var sock = this.io.sockets.sockets[id];
-			if(this._reset){
+
+			if(this.areReseting){
 				sock.vote = "";
 				sock.emit('update',{vote:sock.vote});
 			}
@@ -107,7 +112,6 @@ class Room{
 		};
 
 		this.io.to(this.name).emit('update', DB);
-		this._reset = false;
 
 	    // Autoflip
 	    if(this.autoFlip && haveAllVotes && this.canVote){

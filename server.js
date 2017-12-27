@@ -31,7 +31,8 @@ io.on('connection', (socket)=>{
         var type = payload.type;
         var data = payload.data;
 
-        var performSync = (type != "room"); // Room syncs when ready
+        // These control their own sync
+        var performSync = (type != "room" && type != "reset");
 
         var log = "[+] "+socket.name+"["+(getRoomName(socket))+"] ";
 
