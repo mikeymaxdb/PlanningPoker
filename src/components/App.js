@@ -10,7 +10,8 @@ require('./css/App.scss');
 var STAGES = {
     ERROR: 0,
     VOTING: 1,
-    FLIPPED: 2
+    FLIPPED: 2,
+	RESETING: 3
 }
 
 class App extends React.Component{
@@ -18,11 +19,14 @@ class App extends React.Component{
 		super(props);
 
 		var view = this;
+		var hash = window.location.hash.replace("#","");
+		var roomName = hash || localStorage.getItem('room') || "";
+
 		this.state = {
 			selection: null,
 			users: [],
 			connected: false,
-			room: localStorage.getItem('room') || "",
+			room: roomName,
 			name: localStorage.getItem('name') || "Name",
 			vote: "",
 			roomData: {
@@ -83,6 +87,7 @@ class App extends React.Component{
 
 	onRoomChange(room){
 		this.setState({room:room});
+		window.location.hash = room;
 		localStorage.setItem("room", room);
 		this.emit("room", room);
 	}
