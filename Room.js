@@ -12,6 +12,8 @@ class Room{
 		this._stage = 1;
 		this._autoFlip = false;
 
+		this._areReseting = false;
+
 		this.io = io;
 	}
 
@@ -44,6 +46,14 @@ class Room{
 		this._autoFlip = autoFlip;
 	}
 
+	get areReseting(){
+		return this._areReseting;
+	}
+
+	set areReseting(ar){
+		this._areReseting = ar;
+	}
+
 
 	// Generated props
 	get data(){
@@ -59,9 +69,6 @@ class Room{
 		return this.stage == STAGES.VOTING;
 	}
 
-	get areReseting(){
-		return this.stage == STAGES.RESETING
-	}
 
 
 	// Actions
@@ -74,9 +81,10 @@ class Room{
 	}
 
 	reset(){
-		this.stage = STAGES.RESETING;
-		this.sync()
+		this.areReseting = true;
 		this.stage = STAGES.VOTING;
+		this.sync();
+		this.areReseting = false;
 	}
 
 	sync(){

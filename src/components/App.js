@@ -10,8 +10,7 @@ require('./css/App.scss');
 var STAGES = {
     ERROR: 0,
     VOTING: 1,
-    FLIPPED: 2,
-	RESETING: 3
+    FLIPPED: 2
 }
 
 class App extends React.Component{
