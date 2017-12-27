@@ -35,13 +35,16 @@ class Settings extends React.Component{
 	}
 
 	render(){
+		var roomLabel = this.props.room?"Room":"Enter the name of your room";
+		var title = this.props.room?"":<div className="title">Planning Poker</div>;
 		return (
 			<div className="Settings">
 				<div className="items">
-					<div className="inputItem">
-						<div className="label">Room</div>
+					<div className={"inputItem" + (this.props.room?"":" NoRoomName")}>
+						{title}
+						<div className="label">{roomLabel}</div>
 						<div>
-							<input type="text" className={this.props.room?"":"toFill"} value={this.props.room} onChange={this.updateRoom} />
+							<input type="text" value={this.props.room} onChange={this.updateRoom} />
 						</div>
 					</div>
 					<div className="inputItem">
