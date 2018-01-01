@@ -58,7 +58,7 @@ class Room{
 	// Generated props
 	get data(){
 		return {
-			name: this.name,
+			room: this.name,
 			options: this.options,
 			stage: this.stage,
 			autoFlip: this.autoFlip
@@ -94,11 +94,9 @@ class Room{
 			return;
 		}
 
-		var DB = {
-			users: [],
-			room: this.name,
-			roomData: this.data
-		}
+		var DB = this.data;
+
+		DB.users = [];
 
 	    var haveAllVotes = true;
 

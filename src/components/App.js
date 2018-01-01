@@ -28,11 +28,9 @@ class App extends React.Component{
 			room: roomName,
 			name: localStorage.getItem('name') || "Name",
 			vote: "",
-			roomData: {
-				options: "",
-				stage: 1,
-				autoFlip: false
-			},
+			options: "",
+			stage: 1,
+			autoFlip: false
 		};
 
 		this.onRoomChange = this.onRoomChange.bind(this);
@@ -78,7 +76,7 @@ class App extends React.Component{
 	}
 
 	onVoteSelect(vote){
-		if(this.state.roomData.stage == STAGES.VOTING){
+		if(this.state.stage == STAGES.VOTING){
 			this.setState({vote:vote});
 			this.emit("vote", vote);
 		}
@@ -98,7 +96,7 @@ class App extends React.Component{
 	}
 
 	onOptionsChange(options){
-		this.setState({roomData:{options:options,stage:this.state.roomData.stage}});
+		this.setState({options:options});
 		this.emit("options", options);
 	}
 
@@ -125,9 +123,10 @@ class App extends React.Component{
 							onOptionsChange={this.onOptionsChange}
 							room={this.state.room}
 							name={this.state.name}
-							options={this.state.roomData.options}
+							options={this.state.options}
 						/>
-						<Votes users={this.state.users} stage={this.state.roomData.stage}/>
+
+						<Votes users={this.state.users} stage={this.state.stage}/>
 					</div>
 					<div className="sidebar">
 						<div className={"status "+(this.state.connected?"con":"")} />
@@ -135,7 +134,7 @@ class App extends React.Component{
 							<div>
 								<button onClick={this.flip}>FLIP</button>
 								<div className="checkbox">
-									<input type="checkbox" id="autoFlipCheckbox" checked={this.state.roomData.autoFlip} onChange={this.toggleAutoFlip}/>
+									<input type="checkbox" id="autoFlipCheckbox" checked={this.state.autoFlip} onChange={this.toggleAutoFlip}/>
 									<label htmlFor="autoFlipCheckbox">Auto</label>
 								</div>
 								<button onClick={this.reset}>RESET</button>
@@ -146,7 +145,7 @@ class App extends React.Component{
 				<VotingCards
 					onVoteSelect={this.onVoteSelect}
 					vote={this.state.vote}
-					options={this.state.roomData.options}
+					options={this.state.options}
 				/>
 			</div>
 		)
