@@ -113,6 +113,10 @@ class App extends React.Component{
 	}
 
 	render(){
+		var stage = this.state.stage;
+		var options = this.state.options;
+		var users = this.state.users;
+
 		return (
 			<div className="App">
 				<div className="public">
@@ -127,6 +131,7 @@ class App extends React.Component{
 						/>
 
 						<Votes users={this.state.users} stage={this.state.stage}/>
+						{stage == 2 ? <div className="avg">{"Avg: " + calcAvg(options, users)}</div> : null}
 					</div>
 					<div className="sidebar">
 						<div className={"status "+(this.state.connected?"con":"")} />
@@ -153,3 +158,55 @@ class App extends React.Component{
 };
 
 module.exports = App;
+
+//returns the first integer found in the string
+var stringToInt = function(str){
+	var r = /\d+/g;
+	var num = NaN;
+	if (str){
+		var nums = str ? str.match(r): null;
+		if (nums){
+			//at least one number has been found
+			num = Number(nums[0]);
+		}
+	}
+
+	return num;
+}
+
+var calcAvg = function(options, users){
+	var r = /\d+/g;
+	var validVotes = 0;
+	var total = users.reduce(function(a, c){
+		//a vote is considered valid when it has a number in it
+		var num = stringToInt(c.vote);
+		if (isNaN(num)){
+			return a;
+		} else {
+			validVotes++;
+			return a + num;
+		}
+	}, 0);
+
+	var avg = total / validVotes;
+
+	//find the closest option
+	var dist = Number.MAX_SAFE_INTEGER;
+	var bestMatch = 0;
+
+	options.split(",").forEach(function(val){
+		var num = stringToInt(val);
+		if (!isNaN(num)){
+			var newDist = Math.abs(avg - num);
+			if (newDist < dist){
+				dist = newDist;
+				bestMatch = num;
+			} else if (newDist == dist && num > bestMatch){
+				//favor the largest number
+				bestMatch = num;
+			}
+		}
+	})
+	
+	return bestMatch;
+}
