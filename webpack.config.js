@@ -7,7 +7,7 @@ const { CleanWebpackPlugin } = require('clean-webpack-plugin')
 
 module.exports = {
     mode: 'production',
-    entry: './src/apps/planning.tsx',
+    entry: './src/index.tsx',
     output: {
         path: path.resolve(__dirname, '/public/'),
         filename: 'bundle.js',
@@ -56,5 +56,15 @@ module.exports = {
                 ],
             },
         ],
+    },
+    devServer: {
+        port: 8080,
+        // hot: false,
+        client: {
+            overlay: {
+                errors: true,
+                warnings: false,
+            },
+        },
     },
 }
