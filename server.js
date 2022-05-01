@@ -24,6 +24,7 @@ function getRoomName(socket){
 
 var io = require('socket.io')(Server,{path: '/planningSocket'});
 io.on('connection', (socket)=>{
+    console.log('[!]', new Date().toLocaleString())
 	console.log('[+] A user connected');
 	socket.name = "User";
 
