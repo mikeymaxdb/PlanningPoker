@@ -1,0 +1,55 @@
+{
+    parser: "@typescript-eslint/parser",
+    parserOptions: {
+        project: "./tsconfig.json",
+    },
+    plugins: [
+        "@typescript-eslint",
+    ],
+    "extends": [
+        "airbnb",
+        "airbnb-typescript",
+        "airbnb/hooks",
+        "plugin:@typescript-eslint/recommended",
+    ],
+    "env": {
+        "browser": true,
+    },
+    "settings": {
+        "import/resolver": "webpack"
+    },
+    "rules": {
+        "react/jsx-indent": ["error", 4],
+        "react/jsx-indent-props": ["error", 4],
+        "@typescript-eslint/indent": ["error", 4, {
+            "SwitchCase": 1,
+        }],
+        "no-multiple-empty-lines": "warn",
+        "@typescript-eslint/semi": ["error", "never"],
+        "no-param-reassign": ["error", { "props": false }],
+        "no-underscore-dangle": "off",
+        "no-unused-vars": "off",
+        "@typescript-eslint/no-unused-vars": "warn",
+        "max-len": ["warn", 120],
+        "import/prefer-default-export": "off",
+        "object-curly-newline": "off",
+        "class-methods-use-this": 1,
+        "react/sort-comp": "off",
+        "@typescript-eslint/lines-between-class-members": ["error", "always", { "exceptAfterSingleLine": "true" }],
+        "react/function-component-definition": [2, {
+            "namedComponents": "arrow-function",
+            "unnamedComponents": "arrow-function",
+        }],
+
+        "@typescript-eslint/naming-convention": "off",
+    },
+    "overrides": [
+        {
+            "files": "**/*.ts",
+            "rules": {
+                "react/no-unused-class-component-methods": "off",
+                "react/state-in-constructor": "off",
+            },
+        },
+    ],
+}

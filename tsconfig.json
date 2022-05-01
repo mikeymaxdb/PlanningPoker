@@ -1,0 +1,15 @@
+{
+    "compilerOptions": {
+        "baseUrl": "src",
+        "outDir": "./public/",
+        "sourceMap": true,
+        "strict": true,
+        "module": "es6",
+        "target": "es6",
+        "jsx": "react",
+        "lib": ["dom"],
+        "allowJs": true,
+        "moduleResolution": "node",
+        "allowSyntheticDefaultImports": true
+    }
+}
